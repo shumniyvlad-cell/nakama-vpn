@@ -540,6 +540,27 @@ ul, ol { padding: 0; list-style: none; }
 .foot__links a:hover { opacity: 1; color: var(--lime); }
 .foot__meta { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 16px; font-size: 14px; opacity: .55; margin-top: 16px; }
 .foot__jp { font-family: var(--jp); }
+.foot__meta a { text-underline-offset: 3px; }
+
+/* ---------- Документы: соглашение и политика ---------- */
+
+.doc-head .nav { margin-bottom: clamp(40px, 7vw, 96px); }
+.doc-title { font-family: var(--display); font-weight: 700; font-size: clamp(32px, 5.4vw, 72px); line-height: 1; letter-spacing: -.035em; max-width: 14ch; overflow-wrap: break-word; hyphens: auto; }
+.doc-date { margin-top: 20px; font-size: 15px; color: var(--cream); opacity: .7; }
+.doc { max-width: 780px; }
+.doc h2 { font-family: var(--display); font-weight: 600; font-size: clamp(20px, 2.1vw, 26px); line-height: 1.2; letter-spacing: -.02em; margin-top: clamp(36px, 4vw, 52px); }
+.doc h2:first-child { margin-top: 0; }
+.doc p { margin-top: 12px; font-size: 17px; line-height: 1.6; }
+.doc ul { margin-top: 10px; display: grid; gap: 8px; }
+.doc li { position: relative; padding-left: 22px; font-size: 17px; line-height: 1.55; }
+.doc li::before { content: ""; position: absolute; left: 3px; top: .62em; width: 7px; height: 7px; border-radius: 50%; background: var(--orange); }
+.doc a { text-underline-offset: 3px; }
+.doc .n { font-weight: 600; }
+.doc table { width: 100%; margin-top: 16px; border-collapse: collapse; font-size: 17px; }
+.doc th, .doc td { padding: 12px 16px 12px 0; text-align: left; vertical-align: top; border-bottom: 1px solid rgba(0, 0, 0, .18); }
+.doc th { font-family: var(--display); font-weight: 600; font-size: 14px; }
+.doc td:last-child, .doc th:last-child { text-align: right; padding-right: 0; white-space: nowrap; }
+.doc td small { font-size: 14px; opacity: .7; }
 
 /* ---------- Движение (только один оркестрированный момент на первом экране) ---------- */
 
@@ -591,4 +612,6 @@ ul, ol { padding: 0; list-style: none; }
   .step { grid-template-columns: 2ch 1fr; gap: 14px; }
   .where__item { grid-template-columns: 1fr; gap: 6px; }
   .phone { box-shadow: 12px 12px 0 var(--orange); }
+  .doc-title { font-size: 27px; }
+  .foot__meta { flex-direction: column; gap: 8px; }
 }
