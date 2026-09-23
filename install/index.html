@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nakama VPN — установка</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" type="image/svg+xml" href="../assets/mark.svg">
+  <link rel="stylesheet" href="../css/fonts.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .install { max-width: 720px; margin: 0 auto; }
+    .install__title { font-family: var(--display); font-weight: 700; font-size: clamp(30px, 5vw, 56px); line-height: 1; letter-spacing: -.03em; }
+    .install__lead { margin-top: 18px; color: var(--cream); }
+    .apps-list { margin-top: 32px; display: grid; gap: 10px; }
+    .app-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 16px 18px; border: 1px solid rgba(232, 226, 207, .18); border-radius: 16px; }
+    .app-row__name { font-family: var(--display); font-weight: 500; font-size: 16px; }
+    .app-row__note { font-size: 14px; color: var(--cream); opacity: .7; margin-top: 4px; }
+    .app-row--primary { background: var(--lime); color: var(--black); border-color: var(--lime); }
+    .app-row--primary .app-row__note { color: var(--black); }
+    .app-row__actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .link-box { margin-top: 28px; padding: 16px 18px; border-radius: 16px; background: var(--umber-deep); color: var(--cream); font-size: 14px; word-break: break-all; }
+    .link-box code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; }
+    .link-box .btn { margin-top: 12px; }
+    .steps--tight { margin-top: 32px; }
+    .steps--tight .step { border-top-color: rgba(232, 226, 207, .16); }
+    .steps--tight .step__n { color: var(--lime); }
+    .steps--tight .step__t { color: var(--cream); }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+<div class="page">
+  <main class="block block--black install" id="main">
+    <nav class="nav" aria-label="Навигация" style="margin-bottom:40px">
+      <a class="brand" href="../">
+        <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true">
+          <circle cx="14" cy="14" r="11.5" fill="none" stroke="#E8E2CF" stroke-width="2"/>
+          <path d="M6 22 L22 6" stroke="#C6FF2E" stroke-width="3.2" stroke-linecap="round"/>
+          <circle cx="22" cy="6" r="3.4" fill="#FA5313"/>
+        </svg>
+        Nakama <small>by Union</small>
+      </a>
+      <a class="btn btn--lime btn--sm" href="https://t.me/Nakamavpn_bot">Открыть бота</a>
+    </nav>
+
+    <div id="ready">
+      <h1 class="install__title">Осталось два тапа.</h1>
+      <p class="install__lead lead">Выбери приложение: подписка добавится сама. Если приложения ещё нет, сначала поставь его из магазина, потом вернись сюда и нажми «Добавить».</p>
+
+      <div class="apps-list" id="apps"></div>
+
+      <div class="link-box">
+        Ссылка подписки, если хочешь вставить вручную:<br>
+        <code id="subText"></code><br>
+        <button class="btn btn--cream btn--sm" id="copy" type="button">Скопировать ссылку</button>
+      </div>
+
+      <ol class="steps steps--tight">
+        <li class="step"><span class="step__n">1</span><p class="step__t">Поставь приложение из магазина, если его нет.</p></li>
+        <li class="step"><span class="step__n">2</span><p class="step__t">Нажми «Добавить» напротив него: откроется приложение с профилем «Nakama VPN».</p></li>
+        <li class="step"><span class="step__n">3</span><p class="step__t">Нажми «Подключить». Если не идёт, напиши в поддержку в боте.</p></li>
+      </ol>
+    </div>
+
+    <div id="empty" class="hidden">
+      <h1 class="install__title">Ссылка не пришла.</h1>
+      <p class="install__lead lead">Эта страница открывается из бота кнопкой «Установить». Открой бота, нажми «Ссылка» и попробуй ещё раз.</p>
+      <p style="margin-top:28px"><a class="btn btn--lime" href="https://t.me/Nakamavpn_bot?start=install">Открыть бота</a></p>
+    </div>
+  </main>
+</div>
+
+<script>
+(function () {
+  const params = new URLSearchParams(location.hash.replace(/^#/, '')) ;
+  const q = new URLSearchParams(location.search);
+  const sub = params.get('s') || q.get('s') || '';
+  if (!/^https?:\/\//.test(sub)) {
+    document.getElementById('ready').classList.add('hidden');
+    document.getElementById('empty').classList.remove('hidden');
+    return;
+  }
+  const ua = navigator.userAgent;
+  const isIOS = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const isAndroid = /Android/.test(ua);
+  const isMac = !isIOS && /Macintosh/.test(ua);
+  const isWin = /Windows/.test(ua);
+  const b64url = btoa(unescape(encodeURIComponent(sub))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  const enc = encodeURIComponent(sub);
+
+  const apps = [
+    { name: 'Happ', note: 'iPhone, Android, Mac, Windows', deep: 'happ://add/' + b64url,
+      store: isIOS ? 'https://apps.apple.com/ru/app/happ-proxy-utility-plus/id6746188973'
+           : isAndroid ? 'https://play.google.com/store/apps/details?id=com.happproxy'
+           : 'https://www.happ.su/main/ru', primary: true },
+    { name: 'v2rayTun', note: 'iPhone, Android, Windows', deep: 'v2raytun://import/' + enc,
+      store: isIOS ? 'https://apps.apple.com/app/v2raytun/id6476628951'
+           : isAndroid ? 'https://play.google.com/store/apps/details?id=com.v2raytun.android'
+           : 'https://v2raytun.com' },
+    { name: 'Streisand', note: 'iPhone и Mac', deep: 'streisand://import/' + enc,
+      store: 'https://apps.apple.com/app/streisand/id6450534064', hide: isAndroid || isWin },
+    { name: 'Hiddify', note: 'Android, Windows, Mac, Linux', deep: 'hiddify://import/' + enc,
+      store: 'https://hiddify.com', hide: isIOS }
+  ];
+
+  const list = document.getElementById('apps');
+  apps.filter(a => !a.hide).forEach(a => {
+    const row = document.createElement('div');
+    row.className = 'app-row' + (a.primary ? ' app-row--primary' : '');
+    row.innerHTML =
+      '<div><div class="app-row__name">' + a.name + '</div><div class="app-row__note">' + a.note + '</div></div>' +
+      '<div class="app-row__actions">' +
+        '<a class="btn btn--sm ' + (a.primary ? 'btn--black' : 'btn--cream') + '" href="' + a.deep + '">Добавить</a>' +
+        '<a class="btn btn--sm ' + (a.primary ? 'btn--black' : 'btn--cream') + '" href="' + a.store + '" target="_blank" rel="noopener">Скачать</a>' +
+      '</div>';
+    list.appendChild(row);
+  });
+
+  const subText = document.getElementById('subText');
+  subText.textContent = sub;
+  const copy = document.getElementById('copy');
+  copy.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(sub);
+      copy.textContent = 'Скопировано';
+    } catch (e) {
+      const r = document.createRange(); r.selectNodeContents(subText);
+      const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+      copy.textContent = 'Выдели и скопируй';
+    }
+  });
+})();
+</script>
+</body>
+</html>
